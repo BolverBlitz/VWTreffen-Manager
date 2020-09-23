@@ -1,0 +1,224 @@
+<!DOCTYPE HTML>
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>VW Treffen Manager</title>
+		<meta charset="utf-8" />
+		<!-- <link rel="icon" href="images/EBG.png"> -->
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Sidebar -->
+			<section id="sidebar">
+				<div class="inner">
+					<nav>
+						<ul>
+							<li><a href="#Willkommen">Willkommen</a></li>
+							<li><a href="#Events">Events</a></li>
+							<li><a href="#TreffenErstellen">Erstellen</a></li>
+						</ul>
+					</nav>
+				</div>
+			</section>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+				<!-- Intro -->
+					<section id="Willkommen" class="wrapper style1 fullscreen fade-up">
+						<div class="inner">
+							<h1>VW Treffen Manager</h1>
+							<p>Übersicht für kommende VW Treffen | Stammtische | Ausfahrten</p>
+							<ul class="actions">
+								<li><a href="#TreffenErstellen" class="button scrolly">Neue Verstanstaltung erstellen</a></li>
+							</ul>
+						</div>
+					</section>
+				<!-- Events -->
+					<section id="Events" class="wrapper style3 fade-up">
+						<div class="inner">
+							<h2>Events:</h2>
+							<p>Liste der nächsten 6 VW Treffen | Stammtische | Ausfahrten</p>
+							<div class="features">
+								REPLACE_THIS_WITH_SECTIONEVENTS
+							</div>
+							
+						</div>
+					</section>
+				<!-- TreffenErstellen -->
+					<section id="TreffenErstellen" class="wrapper style1 fade-up">
+						<div class="inner">
+							<h2>Event erstellen.</h2>
+							<p>Einfach das Formular ausfüllen und unser Team wird das Event verifizieren!</p>
+							<div class="split style1">
+								<section>
+									<div id="form-container"> 
+										<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+										<form id="cform" method="POST" action="https://api.vw-events.eu/api/v1/VWTreffen">
+											<div class="fields">
+												<div class="field half">
+													<label for="PersonName">Name des/der Ersteller(s/in)*</label>
+													<input type="text" name="PersonName" id="PersonName" />
+												</div>
+												<div class="field half">
+													<label for="PersonEmail">Email des/der Ersteller(s/in)*</label>
+													<input type="text" name="PersonEmail" id="PersonEmail" />
+												</div>
+												<div class="field half">
+													<label for="Eventname">Eventname</label>
+													<input type="text" name="Eventname" id="Eventname" />
+												</div>
+												<div class="field half">
+													<label for="Eventart">Event Art</label>
+													<select name="Eventart" id="Eventart">
+														<option value="Empty">- Auswahl -</option>
+														<option value="0">Treffen</option>
+														<option value="1">Ausfahrt</option>
+														<option value="2">Stammtisch</option>
+														<option value="3">Sonstiges</option>
+													</select>
+												</div>
+												<div class="field half">
+													<label for="DateTime">Datum und Uhrzeit**</label>
+													<input type="text" name="DateTime" id="DateTime" />
+												</div>
+												<div class="field half">
+													<label for="Adresse">Adresse***</label>
+													<input type="text" name="Adresse" id="Adresse" />
+												</div>
+												<div class="field half">
+													<label for="URL">URL (optional)</label>
+													<input type="text" name="URL" id="URL" />
+												</div>
+												<div class="field">
+													<label for="Beschreibung">Beschreibung</label>
+													<textarea name="Beschreibung" id="Beschreibung" rows="2"></textarea>
+												</div>
+											</div>
+										<ul class="actions">
+											<input type="submit" value="Submit">
+										</ul>
+										<div id="result"></div>
+									</form>
+									<script>
+										$("#cform").submit(function(event) {
+
+										  event.preventDefault();
+
+										  var $form = $(this),
+											url = $form.attr('action');
+
+										  var posting = $.post(url, {
+											PersonName: $('#PersonName').val(),
+											PersonEmail: $('#PersonEmail').val(),
+											Eventname: $('#Eventname').val(),
+											Eventart: $('#Eventart').val(),
+											DateTime: $('#DateTime').val(),
+											Adresse: $('#Adresse').val(),
+											URL: $('#URL').val(),
+											Beschreibung: $('#Beschreibung').val()
+										  });
+
+										  posting.done(function(data) {
+											$('#result').text('Erfolgreich übertragen. Die Daten werden nun geprüft!');
+										  });
+										  posting.fail(function(err) {
+											if(err.status === 400){
+												/*Handle API request validation*/
+												if(err.responseJSON.message === '"Eventart" must be a number'){
+													$('#result').text('Bitte wähle eine Event Art aus!');
+												}else if(err.responseJSON.message === 'Duplicated Entry'){
+													$('#result').text('Dieses Event wurde schon eingereicht!');
+												}else{
+													let RespArr = err.responseJSON.message.split('"');
+													function jsUcfirst(string) 
+													{
+														return string.charAt(0).toUpperCase() + string.slice(1);
+													}
+													if(RespArr[2].replace(/"/g,'',) === " is not allowed to be empty"){
+															$('#result').text("Bad Stuff :(");
+														if(RespArr[1].replace(/"/g,'',) === "DateTime"){
+															$('#result').text("Datum und Uhrzeit muss ausgefüllt sein!");
+														}else if(RespArr[1].replace(/"/g,'',) === "PersonName"){
+															$('#result').text("Name des/der Ersteller(s/in) muss ausgefüllt sein!");
+														}else if(RespArr[1].replace(/"/g,'',) === "PersonEmail"){
+															$('#result').text("Email des/der Ersteller(s/in) muss ausgefüllt sein!");
+														}else{
+															$('#result').text(jsUcfirst(RespArr[1].replace(/"/g,'',)) + " muss ausgefüllt sein!");
+														}
+													}
+													if(err.responseJSON.message.includes("fails to match the required pattern:")){
+														if(RespArr[1].replace(/"/g,'',) === "DateTime"){
+															$('#result').text("Datum und Uhrzeit entspricht nicht der Formatierung! **");
+														}else if(RespArr[1].replace(/"/g,'',) === "PersonName"){
+															$('#result').text("Name des/der Ersteller(s/in) enthält unzulässige Zeichen! ****");
+														}else if(RespArr[1].replace(/"/g,'',) === "PersonEmail"){
+															$('#result').text("Email des/der Ersteller(s/in) enthält unzulässige Zeichen! ****");
+														}else{
+															$('#result').text(jsUcfirst(RespArr[1].replace(/"/g,'',)) + " enthält unzulässige Zeichen! ****");
+														}
+													}
+													if(RespArr[2].replace(/"/g,'',) === " must be a valid email"){
+														$('#result').text("Email des/der Ersteller(s/in) ist keine gültige E-Mail!");
+													}
+													if(RespArr[2].replace(/"/g,'',) === " must be a valid uri"){
+														$('#result').text(jsUcfirst(RespArr[1].replace(/"/g,'',)) + " ist ungültig! Beispiel: https://example.com");
+													}
+												}
+												/*Handle API rate limiting*/
+											}else if(err.status === 429){
+												$('#result').text('Zu viele Anfrage, bitte versuchen Sie es später erneut!');
+											}else{
+												$('#result').text('Unknown ERROR!');
+											}
+										  });
+										});
+										</script>
+									</div>
+								</section>
+								<section>
+									<ul class="contact">
+										<li>
+											<p>(*) Daten zum Ersteller werden nicht Veröffentlicht, diese sind nur für eventuelle Rückfragen!</p>
+										</li>
+										<li>
+											<p>(**) Datum und Zeit genau in diesem Format:<br>DD.MM.YYYY HH:MM</p>
+										</li>
+										<li>
+											<p>(***) Adresse genau in diesem Format:<br>Straße Hausnummer PLZ Stadt<br>Beispiel: Beuthener Str. 1, 90471 Nürnberg</p>
+										</li>
+										<li>
+											<p>(****) Erlaubte Zeichen sind:<br>a-z,A-Z,0-9,ä,ö,ü,ß</p>
+										</li>
+									</ul>
+								</section>
+							</div>
+						</div>
+					</section>
+
+		<!-- Footer -->
+			<footer id="footer" class="wrapper style1-alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li><li>Service: <a href="https://ebg.pw/">EBG.PW</a></li>
+					</ul>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
