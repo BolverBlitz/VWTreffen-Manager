@@ -40,8 +40,12 @@ bot.start();
 
 bot.on(/^\/help/i, (msg) => {
 	if (msg.text.split(' ')[0].endsWith(process.env.Botname) || msg.chat.type === "private") {
-		msg.reply.text(`Befehle:\n/alive: Zeigt Bot Statistiken\n/help: Zeigt diese Nachricht\n\nFür Admins:\n/updateHTTP: Aktuallisiert die Webseite\n/listAdmin: Zeigt eine Liste aller Admins\n/addAdmin: {Antwort} Fügt den Nutzer als Admin Hinzu\n/remAdmin: {Antwort} Löscht den Nutzer aus der Adminliste\n\nDie Webseite wird alle 10 Minuten automatisch aktualisiert!`)
+		msg.reply.text(`Befehle:\n/alive: Zeigt Bot Statistiken\n/help: Zeigt diese Nachricht\n/lizenz: Zeigt Informationen zum Projekt\n\nFür Admins:\n/updateHTTP: Aktuallisiert die Webseite\n/listAdmin: Zeigt eine Liste aller Admins\n/addAdmin: {Antwort} Fügt den Nutzer als Admin Hinzu\n/remAdmin: {Antwort} Löscht den Nutzer aus der Adminliste\n\nDie Webseite wird alle 10 Minuten automatisch aktualisiert!`)
 	}
+});
+
+bot.on(/^\/lizenz/i, (msg) => {
+	bot.sendMessage(msg.chat.id, `Projekt von @BolverBlitz\nLizenz: AGPL-3.0 License \nLizenz Webtemplate: <a href='https://github.com/BolverBlitz/VWTreffen-Manager/tree/master/src/Web'>CCA 3.0</a>\n\n<a href='https://github.com/BolverBlitz/VWTreffen-Manager'>Github</a>`, {parseMode: 'html', webPreview: true})
 });
 
 bot.on(/^\/alive/i, (msg) => {
