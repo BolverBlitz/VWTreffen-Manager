@@ -332,7 +332,7 @@ function CreateHTML(){
 	const Vorlage = fs.readFileSync('./data/Vorlage.html').toString();
 	request(`http://localhost:7600/api/v1/VWTreffen?limit=6`, { json: true }, (err, res, body) => {
 		if(body.error === "No data was found"){
-			var Sections = `<section> <span class="icon solid major fas fa-exclamation-triangle"></span> <h3>Keine Events</h3> </br>Es konnten keine Events für die Zukunft geunden werden :(<b><br><a href=">https//vw-treffe.eu/#TreffenErstellen">Erstelle jetzt ein neues Event</a></b></p> </section>`;
+			var Sections = `<section> <span class="icon solid major fas fa-exclamation-triangle"></span> <h3>Keine Events</h3> </br>Es konnten keine Events für die Zukunft geunden werden :(<b><br><a href="#TreffenErstellen">Erstelle jetzt ein neues Event</a></b></p> </section>`;
 		}else{
 			var Sections = "";
 			body.rows.map(Event => {
