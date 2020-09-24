@@ -337,8 +337,10 @@ function CreateHTML(){
 	request(`http://localhost:7600/api/v1/VWTreffen?limit=6`, { json: true }, (err, res, body) => {
 		if(body.error === "No data was found"){
 			var Sections = `<section> <span class="icon solid major fas fa-exclamation-triangle"></span> <h3>Keine Events</h3> </br>Es konnten keine Events für die Zukunft geunden werden :(<b><br><a href="#TreffenErstellen">Erstelle jetzt ein neues Event</a></b></p> </section>`;
+			var Count = "0"
 		}else{
 			var Sections = "";
+			var Count = body.rows.length;
 			body.rows.map(Event => {
 				let DatumZeit = Event.Zeit.split(" ");
 				if(Event.URI !== ""){
@@ -349,7 +351,8 @@ function CreateHTML(){
 				Sections = Sections + `<section> <span class="icon solid major fas ${Event.Icon}"></span> <h3>${Event.EventName}</h3> <p>Wann: <i>${Event.EventArt}</i> am <i>${DatumZeit[0]}</i> um <i>${DatumZeit[1]}</i> Uhr<br>Wo: <i>${Event.Adresse}</i></br>${Event.Beschreibung}<br><b>${URLHTML}</b></p> </section>`
 			});
 		}
-		var FertigHTML = Vorlage.replace('REPLACE_THIS_WITH_SECTIONEVENTS', Sections)
+		var FertigHTML = Vorlage.replace('REPLACE_THIS_WITH_SECTIONEVENTS_INFO', Sections)
+		FertigHTML = FertigHTML.replace('REPLACE_THIS_WITH_SECTIONEVENTS_COUNT', Count)
 		fs.writeFile("./src/Web/index.html", FertigHTML, (err) => {if (err) console.log(err);
 		});
 	});
