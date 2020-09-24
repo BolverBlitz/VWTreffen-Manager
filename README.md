@@ -23,7 +23,8 @@ The API uses express as webserver but it needs to be proxyed!
 The API should be api.your-domain.tld on port 443 and proxyed to localhost:(The Port you set in .env)  
   
 The main webfolder is ./src/Web, on first startup it will create index.html based on ./data/Vorlage.html  
-please edit  the POST API call there in line 63 to your domain!
+please edit the POST API call there in line 63 (./data/Vorlage.html) to your domain!  
+please edit the GET API call there in line 34 (./src/Web/suche.html)to your domain!  
 
 ### Build-in-API
 The API is avaible at api.your-domain.tld/api/v1/VWTreffen it has 2 functions:  
@@ -43,8 +44,8 @@ Beschreibung: Short event discription max 1024 chars (STRING,REQUIRED)
 GET to get all events  
 Parameter:
 ```
-limit: to limit the results  (OPTIONAL)
-timestamp: UNIX Timestamp to get results after that  (OPTIONAL)
+limit: to limit the results  (NUMBER,OPTIONAL)
+timestamp: UNIX Timestamp to get results after that  (NUMBER,OPTIONAL)
 ```
 example: api.your-domain.tld/api/v1/VWTreffen?limit=5 will return 5 events (If there are 5 or more events in the database!)  
 
