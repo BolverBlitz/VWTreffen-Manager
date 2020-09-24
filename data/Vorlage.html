@@ -115,13 +115,16 @@
 
 										  var $form = $(this),
 											url = $form.attr('action');
-
+											
+											let DateTimeTemp = $('#DateTime').val().split(" ");
+										
 										  var posting = $.post(url, {
 											PersonName: $('#PersonName').val(),
 											PersonEmail: $('#PersonEmail').val(),
 											Eventname: $('#Eventname').val(),
 											Eventart: $('#Eventart').val(),
-											DateTime: $('#DateTime').val(),
+											Date: DateTimeTemp[0],
+											Time: DateTimeTemp[1],
 											Adresse: $('#Adresse').val(),
 											URL: $('#URL').val(),
 											Beschreibung: $('#Beschreibung').val()
@@ -153,6 +156,16 @@
 															$('#result').text("Email des/der Ersteller(s/in) muss ausgefüllt sein!");
 														}else{
 															$('#result').text(jsUcfirst(RespArr[1].replace(/"/g,'',)) + " muss ausgefüllt sein!");
+														}
+													}
+													if(RespArr[2].includes(" length must be less than or equal to ")){
+															$('#result').text("Bad Stuff :(");
+														if(RespArr[1].replace(/"/g,'',) === "PersonName" || RespArr[1].replace(/"/g,'',) === "PersonEmail" || RespArr[1].replace(/"/g,'',) === "Eventname" || RespArr[1].replace(/"/g,'',) === "Adresse" || RespArr[1].replace(/"/g,'',) === "URL"){
+															$('#result').text(`${jsUcfirst(RespArr[1].replace(/"/g,'',))} darf nicht länger als 256 Zeichen sein!`);
+														}else if(RespArr[1].replace(/"/g,'',) === "Beschreibung"){
+															$('#result').text(`${jsUcfirst(RespArr[1].replace(/"/g,'',))} darf nicht länger als 1024 Zeichen sein!`);
+														}else{
+															$('#result').text("Someting broken...");
 														}
 													}
 													if(err.responseJSON.message.includes("fails to match the required pattern:")){

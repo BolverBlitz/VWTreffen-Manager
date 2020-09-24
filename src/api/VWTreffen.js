@@ -50,7 +50,8 @@ const schemaPost = Joi.object({
 	PersonEmail: Joi.string().max(256).email().required(),
 	Eventname: Joi.string().max(256).required().regex(/^[a-z\d\s\-\.\,\ä\ü\ö\ß]*$/i),
 	Eventart: Joi.number().max(3).required(), 
-	DateTime: Joi.string().trim().required().regex(/^(?:(?:31(\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2}) ([01]?[0-9]|2[0-3]):[0-5][0-9]$/),
+	Date: Joi.string().trim().required().regex(/^(?:(?:31(\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/),
+	Time: Joi.string().trim().required().regex(/([01]?[0-9]|2[0-3]):[0-5][0-9]/),
 	Adresse: Joi.string().trim().max(256).required().regex(/^[a-z\d\s\-\.\,\ä\ü\ö\ß]*$/i),
 	URL: Joi.string().max(256).uri().allow(''),
 	Beschreibung: Joi.string().trim().max(1024).required().regex(/^[a-z\d\s\-\.\,\ä\ü\ö\ß]*$/i),
@@ -58,7 +59,8 @@ const schemaPost = Joi.object({
 
 const schemaGet = Joi.object({
 	limit: Joi.number().max(50),
-	timestamp: Joi.number()
+	timestamp: Joi.number(),
+	evnetname: Joi.string().max(256).allow('')
 });
 
 router.post('/', POSTlimiter, async (reg, res, next) => {
@@ -68,13 +70,13 @@ router.post('/', POSTlimiter, async (reg, res, next) => {
 			length: 24,
 			charset: 'hex'
 		  });
-		let TimeTemp = value.DateTime.split(" ");
-		let ZeitTemp = TimeTemp[1].split(":");
-		let TimeSplit = TimeTemp[0].split(".");
+		let DateTime = `${value.Date} ${value.Time}`
+		let ZeitTemp = value.Time.split(":");
+		let TimeSplit = value.Date.split(".");
 		var newDate = TimeSplit[1] + "/" + TimeSplit[0] + "/" + TimeSplit[2];
 		let TimeUnix = new Date(newDate).getTime() + ZeitTemp[0] * 60 * 60 * 1000 + ZeitTemp[1] * 60 * 1000;
 		var values = [
-			[value.PersonName, value.PersonEmail, RString, value.Eventname, PluginConfig.Eventart[value.Eventart], value.DateTime, TimeUnix, value.Adresse, value.URL, value.Beschreibung, "undefined", "false"]
+			[value.PersonName, value.PersonEmail, RString, value.Eventname, PluginConfig.Eventart[value.Eventart], DateTime, TimeUnix, value.Adresse, value.URL, value.Beschreibung, "undefined", "false"]
 		];
 		db.getConnection(function(err, connection){
 			if(err) {
@@ -88,7 +90,6 @@ router.post('/', POSTlimiter, async (reg, res, next) => {
 				connection.query(InsertTreffen, [values], function(err, result){
 					if(err) {
 						if(err.code === "ER_DUP_ENTRY"){
-							console.log(err);
 							res.status(400);
 							res.json({
 								message: "Duplicated Entry"
