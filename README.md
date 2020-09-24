@@ -26,7 +26,7 @@ The main webfolder is ./src/Web, on first startup it will create index.html base
 please edit  the POST API call there in line 63 to your domain!
 
 ### Build-in-API
-The API is avaible at api.your-domain.tld/api/v1/VWTreffen it has 2 functions  
+The API is avaible at api.your-domain.tld/api/v1/VWTreffen it has 2 functions:  
 POST to create a new event, it needs to be verifyed by an admin!  
 Parameter:
 ```
@@ -44,6 +44,7 @@ GET to get all events
 Parameter:
 ```
 limit: to limit the results  (OPTIONAL)
+timestamp: UNIX Timestamp to get results after that  (OPTIONAL)
 ```
 example: api.your-domain.tld/api/v1/VWTreffen?limit=5 will return 5 events (If there are 5 or more events in the database!)  
 

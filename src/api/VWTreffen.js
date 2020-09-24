@@ -34,9 +34,13 @@ const PluginVersion = "0.0.2";
 const PluginAuthor = "BolverBlitz";
 const PluginDocs = "";
 
-const limiter = rateLimit({
+const POSTlimiter = rateLimit({
 	windowMs: 15 * 60 * 1000, 
 	max: 5
+  });
+  const GETlimiter = rateLimit({
+	windowMs: 15 * 60 * 1000, 
+	max: 50
   });
 
 const router = express.Router();
@@ -54,9 +58,10 @@ const schemaPost = Joi.object({
 
 const schemaGet = Joi.object({
 	limit: Joi.number().max(50),
+	timestamp: Joi.number()
 });
 
-router.post('/', limiter, async (reg, res, next) => {
+router.post('/', POSTlimiter, async (reg, res, next) => {
 	try{
 		const value = await schemaPost.validateAsync(reg.body);
 		let RString = randomstring.generate({
@@ -124,14 +129,23 @@ router.post('/', limiter, async (reg, res, next) => {
 	}
 });
 
-router.get('/', limiter, async (reg, res, next) => {
+router.get('/', GETlimiter, async (reg, res, next) => {
 	try{
 		const value = await schemaGet.validateAsync(reg.query);
 		var TimeNow = new Date().getTime();
+
 		if(!reg.query.limit){
-			var GetSQL = SqlString.format(`SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC;`, [TimeNow])
+			if(reg.query.timestamp){
+				var GetSQL = SqlString.format(`SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC;`, [value.timestamp]);
+			}else{
+				var GetSQL = SqlString.format(`SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC;`, [TimeNow]);
+			}
 		}else{
-			var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC LIMIT ?;', [TimeNow, value.limit])
+			if(reg.query.timestamp){
+				var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC LIMIT ?;', [value.timestamp, value.limit]);
+			}else{
+				var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC LIMIT ?;', [TimeNow, value.limit]);
+			}
 		}
 
 		db.getConnection(function(err, connection){
