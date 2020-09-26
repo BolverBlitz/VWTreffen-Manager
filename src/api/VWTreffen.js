@@ -123,7 +123,6 @@ router.post('/', POSTlimiter, async (reg, res, next) => {
 			}
 		});
 	}catch (error) {
-		console.log(error)
 		next(error);
 	}
 });
@@ -186,7 +185,6 @@ router.get('/', GETlimiter, async (reg, res, next) => {
 			connection.release();
 		});
 	}catch (error) {
-		console.log(error)
 		next(error);
 	}
 });

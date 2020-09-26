@@ -95,6 +95,10 @@
 													<textarea name="Beschreibung" id="Beschreibung" rows="2"></textarea>
 												</div>
 											</div>
+										<div id="CheckBoxHi" class="col-6 col-12-small">
+													<input type="checkbox" id="lastCheck" name="lastCheck">
+													<label for="lastCheck">Ich bin mir Bewusst, dass diese Daten öffentlich einsehbar sind!</label>
+												</div><br>
 										<ul class="actions">
 											<input type="submit" value="Submit">
 										</ul>
@@ -102,78 +106,96 @@
 									</form>
 									<script>
 										$("#cform").submit(function(event) {
-
+										
 										  event.preventDefault();
 
 										  var $form = $(this),
 											url = $form.attr('action');
 											
-											let DateTimeTemp = $('#DateTime').val().split(" ");
-										
-										  var posting = $.post(url, {
-											PersonName: $('#PersonName').val(),
-											PersonEmail: $('#PersonEmail').val(),
-											Eventname: $('#Eventname').val(),
-											Eventart: $('#Eventart').val(),
-											Date: DateTimeTemp[0],
-											Time: DateTimeTemp[1],
-											Adresse: $('#Adresse').val(),
-											URL: $('#URL').val(),
-											Beschreibung: $('#Beschreibung').val()
-										  });
+										  let DateTimeTemp = $('#DateTime').val().split(" ");
+										  
+										  if($('#lastCheck').is(':checked') === false){
+											  $('#result').text('Die Checkbox muss bestätigt werden!');
+											  $('#CheckBoxHi').addClass("highlight");
+												setTimeout(function () {
+													  $('#CheckBoxHi').removeClass('highlight');
+												}, 2000);
+										  }else{
+											  var posting = $.post(url, {
+												Eventname: $('#Eventname').val(),
+												Eventart: $('#Eventart').val(),
+												Date: DateTimeTemp[0],
+												Time: DateTimeTemp[1],
+												Adresse: $('#Adresse').val(),
+												URL: $('#URL').val(),
+												Beschreibung: $('#Beschreibung').val()
+											  });
 
-										  posting.done(function(data) {
-											$('#result').text('Erfolgreich übertragen. Die Daten werden nun geprüft!');
-										  });
-										  posting.fail(function(err) {
-											if(err.status === 400){
-												/*Handle API request validation*/
-												if(err.responseJSON.message === '"Eventart" must be a number'){
-													$('#result').text('Bitte wähle eine Event Art aus!');
-												}else if(err.responseJSON.message === 'Duplicated Entry'){
-													$('#result').text('Dieses Event wurde schon eingereicht!');
+											  posting.done(function(data) {
+												$('#result').text('Erfolgreich übertragen. Die Daten werden nun geprüft!');
+											  });
+											  posting.fail(function(err) {
+												if(err.status === 400){
+													/*Handle API request validation*/
+													if(err.responseJSON.message === '"Eventart" must be a number'){
+														$('#result').text('Bitte wähle eine Event Art aus!');
+														$('#Eventart').addClass("highlight");
+														setTimeout(function () {
+															  $('#Eventart').removeClass('highlight');
+														}, 2000);
+													}else if(err.responseJSON.message === 'Duplicated Entry'){
+														$('#result').text('Dieses Event wurde schon eingereicht!');
+													}else{
+														let RespArr = err.responseJSON.message.split('"');
+														function jsUcfirst(string) 
+														{
+															return string.charAt(0).toUpperCase() + string.slice(1);
+														}
+														if(RespArr[2].replace(/"/g,'',) === " is not allowed to be empty"){
+																$('#result').text("Bad Stuff :(");
+															if(RespArr[1].replace(/"/g,'',) === "Date"){
+																$('#DateTime').addClass("highlight");
+																setTimeout(function () {
+																	  $('#DateTime').removeClass('highlight');
+																}, 2000);
+																$('#result').text("Datum und Uhrzeit muss ausgefüllt sein!");
+															}else{
+																$('#result').text(jsUcfirst(RespArr[1].replace(/"/g,'',)) + " muss ausgefüllt sein!");
+																$(`#${RespArr[1].replace(/"/g,'',)}`).addClass("highlight");
+																setTimeout(function () {
+																	  $(`#${RespArr[1].replace(/"/g,'',)}`).removeClass('highlight');
+																}, 2000);
+															}
+														}
+														if(RespArr[2].includes(" length must be less than or equal to ")){
+																$('#result').text("Bad Stuff :(");
+															if(RespArr[1].replace(/"/g,'',) === "Eventname" || RespArr[1].replace(/"/g,'',) === "Adresse" || RespArr[1].replace(/"/g,'',) === "URL"){
+																$('#result').text(`${jsUcfirst(RespArr[1].replace(/"/g,'',))} darf nicht länger als 256 Zeichen sein!`);
+															}else if(RespArr[1].replace(/"/g,'',) === "Beschreibung"){
+																$('#result').text(`${jsUcfirst(RespArr[1].replace(/"/g,'',))} darf nicht länger als 1024 Zeichen sein!`);
+															}else{
+																$('#result').text("Someting broken...");
+															}
+														}
+														if(err.responseJSON.message.includes("fails to match the required pattern:")){
+															if(RespArr[1].replace(/"/g,'',) === "DateTime"){
+																$('#result').text("Datum und Uhrzeit entspricht nicht der Formatierung! *");
+															}else{
+																$('#result').text(jsUcfirst(RespArr[1].replace(/"/g,'',)) + " enthält unzulässige Zeichen! ****");
+															}
+														}
+														if(RespArr[2].replace(/"/g,'',) === " must be a valid uri"){
+															$('#result').text(jsUcfirst(RespArr[1].replace(/"/g,'',)) + " ist ungültig! Beispiel: https://example.com");
+														}
+													}
+													/*Handle API rate limiting*/
+												}else if(err.status === 429){
+													$('#result').text('Zu viele Anfrage, bitte versuchen Sie es später erneut!');
 												}else{
-													let RespArr = err.responseJSON.message.split('"');
-													function jsUcfirst(string) 
-													{
-														return string.charAt(0).toUpperCase() + string.slice(1);
-													}
-													if(RespArr[2].replace(/"/g,'',) === " is not allowed to be empty"){
-															$('#result').text("Bad Stuff :(");
-														if(RespArr[1].replace(/"/g,'',) === "DateTime"){
-															$('#result').text("Datum und Uhrzeit muss ausgefüllt sein!");
-														}else{
-															$('#result').text(jsUcfirst(RespArr[1].replace(/"/g,'',)) + " muss ausgefüllt sein!");
-														}
-													}
-													if(RespArr[2].includes(" length must be less than or equal to ")){
-															$('#result').text("Bad Stuff :(");
-														if(RespArr[1].replace(/"/g,'',) === "Eventname" || RespArr[1].replace(/"/g,'',) === "Adresse" || RespArr[1].replace(/"/g,'',) === "URL"){
-															$('#result').text(`${jsUcfirst(RespArr[1].replace(/"/g,'',))} darf nicht länger als 256 Zeichen sein!`);
-														}else if(RespArr[1].replace(/"/g,'',) === "Beschreibung"){
-															$('#result').text(`${jsUcfirst(RespArr[1].replace(/"/g,'',))} darf nicht länger als 1024 Zeichen sein!`);
-														}else{
-															$('#result').text("Someting broken...");
-														}
-													}
-													if(err.responseJSON.message.includes("fails to match the required pattern:")){
-														if(RespArr[1].replace(/"/g,'',) === "DateTime"){
-															$('#result').text("Datum und Uhrzeit entspricht nicht der Formatierung! *");
-														}else{
-															$('#result').text(jsUcfirst(RespArr[1].replace(/"/g,'',)) + " enthält unzulässige Zeichen! ****");
-														}
-													}
-													if(RespArr[2].replace(/"/g,'',) === " must be a valid uri"){
-														$('#result').text(jsUcfirst(RespArr[1].replace(/"/g,'',)) + " ist ungültig! Beispiel: https://example.com");
-													}
+													$('#result').text('Unknown ERROR!');
 												}
-												/*Handle API rate limiting*/
-											}else if(err.status === 429){
-												$('#result').text('Zu viele Anfrage, bitte versuchen Sie es später erneut!');
-											}else{
-												$('#result').text('Unknown ERROR!');
-											}
-										  });
+											  });
+										  }
 										});
 										</script>
 									</div>
