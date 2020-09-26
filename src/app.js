@@ -23,6 +23,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname + '/html/index.html'));
 });
+app.get('/lawstuff', (req, res) => {
+  res.sendFile(path.join(__dirname + '/html/lawstuff.html'));
+});
 
 app.use('/api/v1', api);
 

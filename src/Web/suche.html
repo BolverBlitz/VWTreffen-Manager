@@ -13,7 +13,6 @@
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
 	<body class="is-preload">
-
 		<!-- Header -->
 			<header id="header">
 				<a href="index.html" class="title">Suche</a>
@@ -65,6 +64,10 @@
 												<option value="10">10</option>
 											</select>
 										</div>
+										<div class="field half">
+											<label for="Eventname">Eventname</label>
+											<input type="text" name="Eventname" id="Eventname" />
+										</div>
 									</div>	
 									<ul class="actions">
 										<li><input type="submit" value="submit"></li>
@@ -73,6 +76,7 @@
 								<script src="assets/js/jquery.min.js"></script>
 								<script>
 									$("#cform").submit(function(event) {
+									  $('#error').html(``);
 
 									  event.preventDefault();
 
@@ -83,7 +87,14 @@
 										var d = new Date();
 										var Year = d.getFullYear();
 									  }else{
-										var Year = $('#Jahr').val();
+										if(isNaN($('#Jahr').val())){
+											console.log("DAS")
+											var d = new Date();
+											var Year = d.getFullYear();
+											$('#error').html(`Das Datum muss eine Jahreszahl sein!<br>Es wurde automatisch ${Year} genommen.`);
+										}else{
+											var Year = $('#Jahr').val();
+										}
 									  }
 
 									  if($('#Monat').val() === "Auswahl"){
@@ -92,13 +103,13 @@
 									  }else{
 										var Monat = $('#Monat').val();
 									  }
-									  console.log(Monat)
 									  var newDate = Monat + "/01/" + Year;
 									  var TimeUnix = new Date(newDate).getTime();
 
 									  var posting = $.get(url, {
 										limit: $('#Anzahl').val(),
-										timestamp: TimeUnix
+										timestamp: TimeUnix, 
+										eventname: $('#Eventname').val()
 									  });
 
 									  posting.done(function(data) {
@@ -116,8 +127,21 @@
 										$("#container").html(Sections);
 									  });
 									  posting.fail(function(err) {
-										if(err.status === 500){
+										if(err.status === 400){
+											let RespArr = err.responseJSON.message.split('"');
+											function jsUcfirst(string) 
+												{
+													return string.charAt(0).toUpperCase() + string.slice(1);
+												}
 											/*Handle API request validation*/
+											if(RespArr[2].includes(" length must be less than or equal to ")){
+														if(RespArr[1].replace(/"/g,'',) === "evnetname"){
+															$('#result').text(`${jsUcfirst(RespArr[1].replace(/"/g,'',))} darf nicht länger als 256 Zeichen sein!`);
+														}else{
+															$('#result').text("Someting broken...");
+														}
+													}
+										}else if(err.status === 500){
 											if(err.responseJSON.error === "No data was found"){
 												$('#result').html(`Es wurden keine Events gefunden!`);
 												$("#container").html(`<section> <span class="icon solid major fas fa-exclamation-triangle"></span> <h3>Keine Events</h3> </br>Es konnten keine Events für die Zukunft geunden werden :(<b><br><a href="índex.html#TreffenErstellen">Erstelle jetzt ein neues Event</a></b></p> </section>`);
@@ -139,6 +163,8 @@
 						</section>
 						<section>
 							<div id="result"></div>
+							<br>
+							<div id="error"></div>
 						</section>
 					</div>
 				</div>
@@ -166,7 +192,7 @@
 		<footer id="footer" class="wrapper style1-alt">
 			<div class="inner">
 				<ul class="menu">
-					<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li><li>Projekt und Dokumentation: <a href="https://github.com/BolverBlitz/VWTreffen-Manager/">Github</a></li>
+					<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li><li>Projekt und Dokumentation: <a href="https://github.com/BolverBlitz/VWTreffen-Manager/">Github</a></li><li>Impressum und Datenschutz: <a href="https://api.vw-events.eu/lawstuff">Hier</a></li>
 				</ul>
 			</div>
 		</footer>

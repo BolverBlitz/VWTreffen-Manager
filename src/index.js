@@ -348,7 +348,7 @@ function CreateHTML(){
 				}else{
 					var URLHTML = ``
 				}
-				Sections = Sections + `<section> <span class="icon solid major fas ${Event.Icon}"></span> <h3>${Event.EventName}</h3> <p>Wann: <i>${Event.EventArt}</i> am <i>${DatumZeit[0]}</i> um <i>${DatumZeit[1]}</i> Uhr<br>Wo: <i>${Event.Adresse}</i></br>${Event.Beschreibung}<br><b>${URLHTML}</b></p> </section>`
+				Sections = Sections + `<section> <span class="icon solid major fas ${Event.Icon}"></span> <h3>${Event.EventName}</h3><p>Was: <i>${Event.EventArt}</i><br>Wann: <i>${DatumZeit[0]}</i> um <i>${DatumZeit[1]}</i> Uhr<br>Wo: <i>${Event.Adresse}</i></br>${Event.Beschreibung}<br><b>${URLHTML}</b></p> </section>`
 			});
 		}
 		var FertigHTML = Vorlage.replace('REPLACE_THIS_WITH_SECTIONEVENTS_INFO', Sections)

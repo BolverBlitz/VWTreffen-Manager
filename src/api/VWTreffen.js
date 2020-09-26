@@ -46,8 +46,6 @@ const POSTlimiter = rateLimit({
 const router = express.Router();
 
 const schemaPost = Joi.object({
-	PersonName: Joi.string().max(256).trim().required().regex(/^[a-z\d\s\-\.\,\ä\ü\ö\ß]*$/i),
-	PersonEmail: Joi.string().max(256).email().required(),
 	Eventname: Joi.string().max(256).required().regex(/^[a-z\d\s\-\.\,\ä\ü\ö\ß]*$/i),
 	Eventart: Joi.number().max(3).required(), 
 	Date: Joi.string().trim().required().regex(/^(?:(?:31(\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/),
@@ -60,7 +58,7 @@ const schemaPost = Joi.object({
 const schemaGet = Joi.object({
 	limit: Joi.number().max(50),
 	timestamp: Joi.number(),
-	evnetname: Joi.string().max(256).allow('')
+	eventname: Joi.string().max(256).allow('')
 });
 
 router.post('/', POSTlimiter, async (reg, res, next) => {
@@ -76,7 +74,7 @@ router.post('/', POSTlimiter, async (reg, res, next) => {
 		var newDate = TimeSplit[1] + "/" + TimeSplit[0] + "/" + TimeSplit[2];
 		let TimeUnix = new Date(newDate).getTime() + ZeitTemp[0] * 60 * 60 * 1000 + ZeitTemp[1] * 60 * 1000;
 		var values = [
-			[value.PersonName, value.PersonEmail, RString, value.Eventname, PluginConfig.Eventart[value.Eventart], DateTime, TimeUnix, value.Adresse, value.URL, value.Beschreibung, "undefined", "false"]
+			["Zu Kompliziert", "Zu Kompliziert", RString, value.Eventname, PluginConfig.Eventart[value.Eventart], DateTime, TimeUnix, value.Adresse, value.URL, value.Beschreibung, "undefined", "false"]
 		];
 		db.getConnection(function(err, connection){
 			if(err) {
@@ -116,7 +114,7 @@ router.post('/', POSTlimiter, async (reg, res, next) => {
 								bot.inlineButton('Bier', {callback: `ico_2_${RString}`})
 							]
 						]);
-						let Message = `Neues Event von <b>${value.PersonName}</b> (${value.PersonEmail})\n\n<b>Event Name:</b> <i>${value.Eventname}</i>\n<b>Event Art:</b> <i>${PluginConfig.Eventart[value.Eventart]}</i>\n<b>Startzeit:</b> <i>${value.DateTime}</i>\n<b>Ort:</b> <i>${value.Adresse}</i>\n<b>Webseite:</b> <i>${URIExit}</i>\n\n<pre language="c++">${value.Beschreibung}</pre>`
+						let Message = `Neues Event\n\n<b>Event Name:</b> <i>${value.Eventname}</i>\n<b>Event Art:</b> <i>${PluginConfig.Eventart[value.Eventart]}</i>\n<b>Startzeit:</b> <i>${DateTime}</i>\n<b>Ort:</b> <i>${value.Adresse}</i>\n<b>Webseite:</b> <i>${URIExit}</i>\n\n<pre language="c++">${value.Beschreibung}</pre>`
 						bot.sendMessage(`${process.env.Telegram_Admin_Chat_ID}`, `${Message}\n\nWähle ein passendes Icon:`, { parseMode: 'html' , webPreview: false, replyMarkup}).catch(error => console.log('Error: (Telegram Send Message)', error.description));
 						res.json(value);
 					}
@@ -137,15 +135,31 @@ router.get('/', GETlimiter, async (reg, res, next) => {
 
 		if(!reg.query.limit){
 			if(reg.query.timestamp){
-				var GetSQL = SqlString.format(`SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC;`, [value.timestamp]);
+				if(reg.query.eventname){
+					var GetSQL = SqlString.format(`SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? AND EventName LIKE ? ORDER BY ZeitUnix ASC;`, [value.timestamp, `%${value.eventname}%`]);
+				}else{
+					var GetSQL = SqlString.format(`SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC;`, [value.timestamp]);
+				}
 			}else{
-				var GetSQL = SqlString.format(`SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC;`, [TimeNow]);
+				if(reg.query.eventname){
+					var GetSQL = SqlString.format(`SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? AND EventName LIKE ? ORDER BY ZeitUnix ASC;`, [TimeNow, `%${value.eventname}%`]);
+				}else{
+					var GetSQL = SqlString.format(`SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC;`, [TimeNow]);
+				}
 			}
 		}else{
 			if(reg.query.timestamp){
-				var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC LIMIT ?;', [value.timestamp, value.limit]);
+				if(reg.query.eventname){
+					var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? AND EventName LIKE ? ORDER BY ZeitUnix ASC LIMIT ?;', [value.timestamp ,`%${value.eventname}%` ,value.limit]);
+				}else{
+					var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC LIMIT ?;', [value.timestamp, value.limit]);
+				}
 			}else{
-				var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC LIMIT ?;', [TimeNow, value.limit]);
+				if(reg.query.eventname){
+					var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? AND EventName LIKE ? ORDER BY ZeitUnix ASC LIMIT ?;', [TimeNow, `%${value.eventname}%`, value.limit]);
+				}else{
+					var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC LIMIT ?;', [TimeNow, value.limit]);
+				}
 			}
 		}
 

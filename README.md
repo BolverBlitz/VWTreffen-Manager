@@ -31,8 +31,6 @@ The API is avaible at api.your-domain.tld/api/v1/VWTreffen it has 2 functions:
 POST to create a new event, it needs to be verifyed by an admin!  
 Parameter:
 ```
-PersonName: Name of the event creator, will remain privat to admins (STRING,REQUIRED)
-PersonEmail: Email of the event creator, will remain privat to admins (E-MAIL,REQUIRED)
 Eventname: Event name (STRING,REQUIRED)
 Eventart: Event type, those are preset in VWTreffen Plugin config! (NUMBER,REQUIRED)
 Date: Date of the event day (STRING,REQUIRED)
