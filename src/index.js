@@ -123,15 +123,19 @@ bot.on(/^\/addAdmin/i, (msg) => {
 				AdminJson[keyName] = [];
 			}
 			if(AdminJson[keyID].includes(msg.from.id)){
-				if(AdminJson[keyID].includes(UserID)){
-					msg.reply.text(`${username}(${UserID}) ist bereits Admin!`);
+				if(UserID === 777000 || UserID === 1087968824){
+					msg.reply.text(`${username}(${UserID}) dieser Nutzer darf kein Admin sein!`);
 				}else{
-					AdminJson[keyID].push(UserID);
-					AdminJson[keyName].push(username);
+					if(AdminJson[keyID].includes(UserID)){
+						msg.reply.text(`${username}(${UserID}) ist bereits Admin!`);
+					}else{
+						AdminJson[keyID].push(UserID);
+						AdminJson[keyName].push(username);
 
-					let NewJson = JSON.stringify(AdminJson);
-					msg.reply.text(`${username}(${UserID}) ist nun Admin!`);
-					fs.writeFile("./data/Admins.json", NewJson, (err) => {if (err) console.log(err);});
+						let NewJson = JSON.stringify(AdminJson);
+						msg.reply.text(`${username}(${UserID}) ist nun Admin!`);
+						fs.writeFile("./data/Admins.json", NewJson, (err) => {if (err) console.log(err);});
+					}
 				}
 			}else{
 				msg.reply.text(`Du musst Admin sein um dies zu nutzen!`);
