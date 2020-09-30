@@ -282,7 +282,7 @@ bot.on('callbackQuery', (msg) => {
 										]
 									]);
 									let value = GetSQLRows[0]; //Convert SQL first restult into Message to send!
-									let Message = `Neues Event von <b>${value.NameErsteller}</b> (${value.MailErsteller})\n\n<b>Event Name:</b> <i>${value.EventName}</i>\n<b>Event Art:</b> <i>${value.EventArt}</i>\n<b>Startzeit:</b> <i>${value.Zeit}</i>\n<b>Ort:</b> <i>${value.Adresse}</i>\n<b>Webseite:</b> <i>${value.URI}</i>\n\n<pre language="c++">${value.Beschreibung}</pre>`
+									let Message = `Neues Event\n\n<b>Event Name:</b> <i>${value.EventName}</i>\n<b>Event Art:</b> <i>${value.EventArt}</i>\n<b>Startzeit:</b> <i>${value.Zeit}</i>\n<b>Ort:</b> <i>${value.Adresse}</i>\n<b>Webseite:</b> <i>${value.URI}</i>\n\n<pre language="c++">${value.Beschreibung}</pre>`
 									bot.answerCallbackQuery(msg.id)
 									bot.editMessageText(
 										{chatId: chatId, messageId: messageId}, `${Message}\n\nBitte alle Angaben auf Fehler oder andere Probleme prüfen! Bitte Aktion wählen:`,
