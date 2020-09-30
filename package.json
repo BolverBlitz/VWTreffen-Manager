@@ -1,6 +1,6 @@
 {
   "name": "VW-Manager",
-  "version": "0.6.3",
+  "version": "0.6.5",
   "description": "VW-Manager",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,7 @@
     "type": "git",
     "url": ""
   },
-  "license": "MIT",
+  "license": "AGPL-3.0",
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -25,6 +25,7 @@
     "joi": "^17.2.1",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
+    "ping": "^0.2.3",
     "randomstring": "^1.1.5",
     "sqlstring": "^2.3.2",
     "systeminformation": "^4.27.4",

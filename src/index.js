@@ -1,6 +1,7 @@
 const app = require('./app');
 const f = require('./bot/Funktions');
 const OS = require('./bot/Hardware');
+const ping = require('ping');
 const request = require("request")
 const package = require('../package')
 const fs = require("fs");
@@ -55,13 +56,15 @@ bot.on(/^\/alive/i, (msg) => {
 		Output = Output + '\n- Load: ' + f.Round2Dec(Hardware.load);
 		Output = Output + '%\n- Memory Total: ' + f.Round2Dec(Hardware.memorytotal/1073741824) + ' GB'
 		Output = Output + '\n- Memory Free: ' + f.Round2Dec(Hardware.memoryfree/1073741824) + ' GB'
-			msg.reply.text("Botname: " + package.name + "\nVersion: " + package.version + "\nUptime: " + f.uptime(Time_started) + "\n\nHardware:" + Output).then(function(msg)
+		ping.promise.probe('api.telegram.org').then(function (ping) {
+			msg.reply.text(`Botname: ${package.name}\nVersion: ${package.version}\nPing: ${ping.avg}ms\n\nUptime: ${f.uptime(Time_started)}\n\nSystem: ${Output}`).then(function(msg)
 			{
 				setTimeout(function(){
-				bot.deleteMessage(msg.chat.id,msg.message_id).catch(error => f.Elog('Error: (delMessage)', error.description));
+				bot.deleteMessage(msg.chat.id,msg.message_id).catch(error => f.Elog('Error (deleteMessage):' + error.description));
 				}, 25000);
             });
-             bot.deleteMessage(msg.chat.id, msg.message_id).catch(error => f.Elog('Error: (delMessage)', error.description));
+            bot.deleteMessage(msg.chat.id, msg.message_id).catch(error => f.Elog('Error (deleteMessage):' + error.description));
+		});
 	});
 });
 

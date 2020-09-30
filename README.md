@@ -45,6 +45,7 @@ Parameter:
 ```
 limit: to limit the results  (NUMBER,OPTIONAL)
 timestamp: UNIX Timestamp to get results after that  (NUMBER,OPTIONAL)
+eventname: Used to filter by Name (STRING,OPTIONAL)
 ```
 example: api.your-domain.tld/api/v1/VWTreffen?limit=5 will return 5 events (If there are 5 or more events in the database!)  
 
