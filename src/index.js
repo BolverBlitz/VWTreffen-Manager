@@ -199,7 +199,7 @@ bot.on('callbackQuery', (msg) => {
 			if(data[3] === 'fr')
 			{
 				db.getConnection(function(err, connection){
-					var GetSQL = SqlString.format('SELECT NameErsteller,MailErsteller,EventName,EventArt,Zeit,Adresse,URI,Beschreibung FROM events where AccesKey = ?;', [data[2]])
+					var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung FROM events where AccesKey = ?;', [data[2]])
 					connection.query(GetSQL, function(err, GetSQLRows, fields) {
 						if(!err) {
 							if(Object.entries(GetSQLRows).length === 0){
@@ -266,7 +266,7 @@ bot.on('callbackQuery', (msg) => {
 		if(AdminJson["Admins"].includes(msg.from.id)){
 			bot.answerCallbackQuery(msg.id)
 			db.getConnection(function(err, connection){
-				var GetSQL = SqlString.format('SELECT NameErsteller,MailErsteller,EventName,EventArt,Zeit,Adresse,URI,Beschreibung FROM events where AccesKey = ?;', [data[2]])
+				var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung FROM events where AccesKey = ?;', [data[2]])
 				connection.query(GetSQL, function(err, GetSQLRows, fields) {
 					if(!err) {
 						if(Object.entries(GetSQLRows).length === 0){
