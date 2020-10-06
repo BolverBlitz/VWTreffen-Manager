@@ -11,7 +11,7 @@ var db = mysql.createPool({
 });
 
 let sqlcmd = "CREATE DATABASE IF NOT EXISTS vwtreffen;";
-let sqlcmdtableMorgenpost = "CREATE TABLE IF NOT EXISTS `events` (`NameErsteller` varchar(255) ,`MailErsteller` varchar(255), `AccesKey` varchar(64), `EventName` varchar(255), `EventArt` varchar(255), `Zeit` varchar(255),`ZeitUnix` varchar(255), `Adresse` varchar(255), `URI` varchar(255), `Beschreibung` varchar(1024), `Verifiziert` varchar(255), `Icon` varchar(64), `Angemeldet` varchar(255), `time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (`EventName`, `Zeit`));"
+let sqlcmdtableMorgenpost = "CREATE TABLE IF NOT EXISTS `events` (`NameErsteller` varchar(255) ,`MailErsteller` varchar(255), `AccesKey` varchar(64), `EventName` varchar(255), `EventArt` varchar(255), `Zeit` varchar(255),`ZeitUnix` varchar(255), `Adresse` varchar(255), `URI` varchar(255), `Beschreibung` varchar(1024), `Verifiziert` varchar(255),`Abgesagt` varchar(255), `Icon` varchar(64), `Angemeldet` varchar(255), `time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (`EventName`, `Zeit`));"
 let alterTable2 = "ALTER TABLE `events` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;"
 
 db.getConnection(function(err, connection){

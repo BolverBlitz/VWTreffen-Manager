@@ -136,25 +136,25 @@ router.get('/', GETlimiter, async (reg, res, next) => {
     if (!reg.query.limit) {
       if (reg.query.timestamp) {
         if (reg.query.eventname) {
-          var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? AND EventName LIKE ? ORDER BY ZeitUnix ASC;', [value.timestamp, `%${value.eventname}%`]);
+          var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND Abgesagt = "false" AND ZeitUnix > ? AND EventName LIKE ? ORDER BY ZeitUnix ASC;', [value.timestamp, `%${value.eventname}%`]);
         } else {
-          var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC;', [value.timestamp]);
+          var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND Abgesagt = "false" AND ZeitUnix > ? ORDER BY ZeitUnix ASC;', [value.timestamp]);
         }
       } else if (reg.query.eventname) {
-        var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? AND EventName LIKE ? ORDER BY ZeitUnix ASC;', [TimeNow, `%${value.eventname}%`]);
+        var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND Abgesagt = "false" AND ZeitUnix > ? AND EventName LIKE ? ORDER BY ZeitUnix ASC;', [TimeNow, `%${value.eventname}%`]);
       } else {
-        var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC;', [TimeNow]);
+        var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND Abgesagt = "false" AND ZeitUnix > ? ORDER BY ZeitUnix ASC;', [TimeNow]);
       }
     } else if (reg.query.timestamp) {
       if (reg.query.eventname) {
-        var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? AND EventName LIKE ? ORDER BY ZeitUnix ASC LIMIT ?;', [value.timestamp, `%${value.eventname}%`, value.limit]);
+        var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND Abgesagt = "false" AND ZeitUnix > ? AND EventName LIKE ? ORDER BY ZeitUnix ASC LIMIT ?;', [value.timestamp, `%${value.eventname}%`, value.limit]);
       } else {
-        var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC LIMIT ?;', [value.timestamp, value.limit]);
+        var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND Abgesagt = "false" AND ZeitUnix > ? ORDER BY ZeitUnix ASC LIMIT ?;', [value.timestamp, value.limit]);
       }
     } else if (reg.query.eventname) {
-      var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? AND EventName LIKE ? ORDER BY ZeitUnix ASC LIMIT ?;', [TimeNow, `%${value.eventname}%`, value.limit]);
+      var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND Abgesagt = "false" AND ZeitUnix > ? AND EventName LIKE ? ORDER BY ZeitUnix ASC LIMIT ?;', [TimeNow, `%${value.eventname}%`, value.limit]);
     } else {
-      var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND ZeitUnix > ? ORDER BY ZeitUnix ASC LIMIT ?;', [TimeNow, value.limit]);
+      var GetSQL = SqlString.format('SELECT EventName,EventArt,Zeit,Adresse,URI,Beschreibung,Icon FROM events where Verifiziert = "true" AND Abgesagt = "false" AND ZeitUnix > ? ORDER BY ZeitUnix ASC LIMIT ?;', [TimeNow, value.limit]);
     }
 
     db.getConnection((err, connection) => {
