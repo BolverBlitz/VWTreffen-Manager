@@ -15,7 +15,7 @@ const db = mysql.createPool({
   charset: 'utf8mb4_bin'
 });
 
-const InsertTreffen = 'INSERT INTO events (NameErsteller, MailErsteller, AccesKey, EventName, EventArt, Zeit, ZeitUnix, Adresse, URI, Beschreibung, Icon, Verifiziert) VALUES ?';
+const InsertTreffen = 'INSERT INTO events (NameErsteller, MailErsteller, AccesKey, EventName, EventArt, Zeit, ZeitUnix, Adresse, URI, Beschreibung, Verifiziert, Abgesagt, Icon) VALUES ?';
 
 const Telebot = require('telebot');
 
@@ -75,7 +75,7 @@ router.post('/', POSTlimiter, async (reg, res, next) => {
     const newDate = `${TimeSplit[1]}/${TimeSplit[0]}/${TimeSplit[2]}`;
     const TimeUnix = new Date(newDate).getTime() + ZeitTemp[0] * 60 * 60 * 1000 + ZeitTemp[1] * 60 * 1000;
     const values = [
-      ['Zu Kompliziert', 'Zu Kompliziert', RString, value.Eventname, PluginConfig.Eventart[value.Eventart], DateTime, TimeUnix, value.Adresse, value.URL, value.Beschreibung, 'undefined', 'false']
+      ['Zu Kompliziert', 'Zu Kompliziert', RString, value.Eventname, PluginConfig.Eventart[value.Eventart], DateTime, TimeUnix, value.Adresse, value.URL, value.Beschreibung, 'false', 'false', 'undefined']
     ];
     db.getConnection((err, connection) => {
       if (err) {
