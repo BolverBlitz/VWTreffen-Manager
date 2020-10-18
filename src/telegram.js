@@ -11,6 +11,7 @@ var Time_started = new Date().getTime();
 const Icons = ["fa-car-side", "fa-campground", "fa-beer"];
 
 const Telebot = require('telebot');
+const { Console } = require('console');
 const bot = new Telebot({
 	token: process.env.VWTreffen_TG_Bot_Token,
 	limit: 1000,
@@ -31,9 +32,10 @@ f.log("HTML was created!");
 
 bot.start();
 
+/*----- Commen commands -----*/
 bot.on(/^\/help/i, (msg) => {
 	if (msg.text.split(' ')[0].endsWith(process.env.Botname) || msg.chat.type === "private") {
-		msg.reply.text(`Befehle:\n/alive: Zeigt Bot Statistiken\n/help: Zeigt diese Nachricht\n/lizenz: Zeigt Informationen zum Projekt\n\nFür Admins:\n/updateHTTP: Aktuallisiert die Webseite\n/listAdmin: Zeigt eine Liste aller Admins\n/addAdmin: {Antwort} Fügt den Nutzer als Admin Hinzu\n/remAdmin: {Antwort} Löscht den Nutzer aus der Adminliste\n\nDie Webseite wird alle 10 Minuten automatisch aktualisiert!`)
+		msg.reply.text(`Befehle:\n/alive: Zeigt Bot Statistiken\n/help: Zeigt diese Nachricht\n/lizenz: Zeigt Informationen zum Projekt\n\nFür Admins:\n/updateHTTP: Aktuallisiert die Webseite\n/listAdmin: Zeigt eine Liste aller Admins\n/addAdmin: {Antwort} Fügt den Nutzer als Admin Hinzu\n/remAdmin: {Antwort} Löscht den Nutzer aus der Adminliste\n\nInline Suche für Events:\n@VWeventsBot <Eventname>: Sucht ein Event nach Name\n\nDie Webseite wird alle 10 Minuten automatisch aktualisiert!`)
 	}
 });
 
@@ -60,6 +62,9 @@ bot.on(/^\/alive/i, (msg) => {
 	});
 });
 
+/*----- Modify Events Commands -----*/
+
+  /*----- Rebuild HTML -----*/
 bot.on(/^\/updateHTTP/i, (msg) => {
 	if(fs.existsSync(`./data/Admins.json`)) {
 		var AdminJson = JSON.parse(fs.readFileSync(`./data/Admins.json`));
@@ -75,6 +80,7 @@ bot.on(/^\/updateHTTP/i, (msg) => {
 	}
 });
 
+/*----- Admin Managment -----*/
 bot.on(/^\/listAdmin/i, (msg) => {
 	bot.deleteMessage(msg.chat.id, msg.message_id).catch(error => f.Elog('Error: (delMessage)', error.description));
 	var keyID = 'Admins';
@@ -168,8 +174,10 @@ bot.on(/^\/remAdmin/i, (msg) => {
 	}
 });
 
+/*----- All Callback Query Handlers -----*/
+
 bot.on('callbackQuery', (msg) => {
-	//console.log(msg.data)
+	//console.log(msg)
 	if ('inline_message_id' in msg) {
 		var inlineId = msg.inline_message_id;
 	}else{
@@ -250,6 +258,7 @@ bot.on('callbackQuery', (msg) => {
 				showAlert: true
 			});
 		}
+
 	}else if(data[0] === 'ico'){
 		if(fs.existsSync(`./data/Admins.json`)) {
 			var AdminJson = JSON.parse(fs.readFileSync(`./data/Admins.json`));
@@ -322,8 +331,248 @@ bot.on('callbackQuery', (msg) => {
 				showAlert: true
 			});
 		}
+	}else if(data[0] === 'u'){
+		if(fs.existsSync(`./data/Admins.json`)) {
+			var AdminJson = JSON.parse(fs.readFileSync(`./data/Admins.json`));
+		}else{
+			bot.answerCallbackQuery(msg.id,{
+				text: `Das können nur Admins nutzen!`,
+				showAlert: true
+			});
+		}
+		if(AdminJson["Admins"].includes(msg.from.id)){
+			//Chance Icon OR Abgesagt
+			if(data[1] === "s"){
+				let Flipper = "false", notFlipper = "true"; //Used to create true/false out of AbgesagtShort
+				if(data[3] === "f"){
+					Flipper = "true", notFlipper = "false"
+				}
+				var UpdateSQL = SqlString.format("UPDATE `events` SET `Abgesagt`=? WHERE (`Abgesagt`=?) AND (`AccesKey`=?);", [Flipper,notFlipper, data[2]]);
+			}else{
+				var UpdateSQL = SqlString.format("UPDATE `events` SET `Icon`=? WHERE (`Icon`=?) AND (`AccesKey`=?);", [Icons[data[1]], Icons[data[3]], data[2]]);
+			}
+			db.getConnection(function(err, connection){
+				connection.query(UpdateSQL, function(err, rows){
+					if(err){console.log(err)}else{
+						if(rows.affectedRows === 1){
+							var GetSQL = SqlString.format('SELECT EventName,EventArt,AccesKey,Zeit,ZeitUnix,Adresse,URI,Beschreibung,Icon,Abgesagt FROM events where AccesKey = ?;', [data[2]]);
+							db.getConnection(function(err, connection){
+								connection.query(GetSQL, function(err, rows){
+									if(Object.entries(rows).length === 0){
+										//Error Endeling wenn acces Key nicht gefunden wurde
+										bot.answerCallbackQuery(msg.id,{
+											text: `Da ist etwas schiefgelaufen...`,
+											showAlert: true
+										});
+										let Message = `--- ERROR ---\n\nDer verwendede AccesKey war ungültig. Das Event existiert nicht!`
+										if ('inline_message_id' in msg) {
+											bot.editMessageText(
+												{inlineMsgId: inlineId}, Message,
+												{parseMode: 'markdown'}
+											).catch(error => console.log('Error:', error));
+										}else{
+											bot.editMessageText(
+												{chatId: chatId, messageId: messageId}, Message,
+												{parseMode: 'markdown'}
+											).catch(error => console.log('Error:', error));
+										}
+									}else{
+										let Abgesagt = "", AbgesagtShort = ""
+										if(rows[0].Abgesagt === "true"){
+											var FindetStatt = "Findet nicht statt"
+											Abgesagt = "Widerruf der Absage", AbgesagtShort = "t"
+
+										}else{
+											var FindetStatt = "Findet statt"
+											Abgesagt = "Absagen", AbgesagtShort = "f"
+										}
+										if(rows[0].ZeitUnix <= Date.now()){
+											var Vergangenheitswarnung = "--- Event in Vergangenheit ---"
+										}else{
+											var Vergangenheitswarnung = "--- Kommendes Event ---"
+										}
+
+										let Auto = `Auto`
+										let Camping = `Camping`
+										let Bier =  `Bier`
+										if(rows[0].Icon === Icons[0]){
+											Auto = `• Auto •`
+										}else if(rows[0].Icon === Icons[1]){
+											Camping = `• Camping •`
+										}else{
+											Bier = `• Bier •`
+										}
+										var replyMarkup = bot.inlineKeyboard([
+											[
+											  bot.inlineButton(Auto, { callback: `u_0_${data[2]}_${Icons.indexOf(rows[0].Icon)}` }),
+											  bot.inlineButton(Camping, { callback: `u_1_${data[2]}_${Icons.indexOf(rows[0].Icon)}` }),
+											  bot.inlineButton(Bier, { callback: `u_2_${data[2]}_${Icons.indexOf(rows[0].Icon)}` })
+											],
+											[
+											  bot.inlineButton(Abgesagt, { callback: `u_s_${data[2]}_${AbgesagtShort}` })
+											]
+										]);
+			
+										let Nachricht = `${Vergangenheitswarnung}\n${FindetStatt}\n\n<b>Event Name:</b> <i>${rows[0].EventName}</i>\n<b>Event Art:</b> <i>${rows[0].EventArt}</i>\n<b>Startzeit:</b> <i>${rows[0].Zeit}</i>\n<b>Ort:</b> <i>${rows[0].Adresse}</i>\n<b>Webseite:</b> <i>${rows[0].URI}</i>\n\n<pre language="c++">${rows[0].Beschreibung}</pre>`;
+										if ('inline_message_id' in msg) {
+											bot.editMessageText(
+												{inlineMsgId: inlineId}, Nachricht,
+												{parseMode: 'html', replyMarkup}
+											).catch(error => console.log('Error:', error));
+										}else{
+											bot.editMessageText(
+												{chatId: chatId, messageId: messageId}, Nachricht,
+												{parseMode: 'html', replyMarkup}
+											).catch(error => console.log('Error:', error));
+										}
+										bot.answerCallbackQuery(msg.id,{
+											text: "Datenbank wurde aktualisiert...",
+											showAlert: false
+										});
+									}
+								});
+							});
+						}else{
+							//Errorhandeling wenn der Knopf veraltete Daten hatte
+							bot.answerCallbackQuery(msg.id,{
+								text: `Da ist etwas schiefgelaufen...`,
+								showAlert: true
+							});
+							let Message = `--- ERROR ---\n\nEventuell war dieser Knopf veraltet oder es ist ein anderer Fehler aufgetreten...\n\nVersuche es erneut, sollte dies weiterhin passieren wende dich an den Hoster.`
+							if ('inline_message_id' in msg) {
+								bot.editMessageText(
+									{inlineMsgId: inlineId}, Message,
+									{parseMode: 'markdown'}
+								).catch(error => console.log('Error:', error));
+							}else{
+								bot.editMessageText(
+									{chatId: chatId, messageId: messageId}, Message,
+									{parseMode: 'markdown'}
+								).catch(error => console.log('Error:', error));
+							}
+						}
+					}
+				});
+			});
+		}else{
+			bot.answerCallbackQuery(msg.id,{
+				text: `Das können nur Admins nutzen!`,
+				showAlert: true
+			});
+		}
 	}else{
 		console.log("Unknown CallbackQuery")
+	}
+});
+
+/*----------------------Inline Handler--------------------------*/
+bot.on('inlineQuery', msg => {
+	let query = msg.query;
+	let queryarr = query.split('');
+	const answers = bot.answerList(msg.id, {cacheTime: 1});
+	if(fs.existsSync(`./data/Admins.json`)) {
+		var AdminJson = JSON.parse(fs.readFileSync(`./data/Admins.json`));
+	}else{
+		answers.addArticle({
+			id: 'Not Admin',
+			title: 'Du bist Admin sein!',
+			description: query,
+			message_text: ("Diese Fuhktion steht nur Admins zur verfügung, leider konnte kein Admin File gefunden werden :(")
+		});
+		return bot.answerQuery(answers);
+	}
+	if(AdminJson["Admins"].includes(msg.from.id)){
+		if(queryarr.length === 0){
+			answers.addArticle({
+				id: 'Not found',
+				title: 'Bitte gib den Event Namen an',
+				description: query,
+				message_text: ("Bitte schreibe den Eventnamen bevor du auf die Nachricht klickst...")
+			});
+			return bot.answerQuery(answers);
+		}else{
+			//var GetSQL = `SELECT EventName,EventArt,Zeit,ZeitUnix,Adresse,URI,Beschreibung,Abgesagt FROM events where LOWER(EventName) LIKE LOWER('%${cleanString(query)}%') AND Verifiziert = "true" LIMIT 5;`
+			var GetSQL = SqlString.format('SELECT EventName,EventArt,AccesKey,Zeit,ZeitUnix,Adresse,URI,Beschreibung,Icon,Abgesagt FROM events where LOWER(EventName) LIKE LOWER(?) AND Verifiziert = "true" LIMIT 5;', [`%${query}%`]);
+			db.getConnection(function(err, connection){
+				connection.query(GetSQL, function(err, rows){
+					if(Object.entries(rows).length === 0){
+						answers.addArticle({
+							id: 'Not found',
+							title: 'Leider konnte ich kein Event mit diesem Namen finden:',
+							description: query,
+							message_text: ("Leider konnte ich kein Event mit diesem Namen finden können: " + query)
+						});
+						return bot.answerQuery(answers);
+					}else{
+						idCount = 0;
+						for (i = 0; i < rows.length; i++) {
+							let Abgesagt = "", AbgesagtShort = ""
+							if(rows[i].Abgesagt === "true"){
+								var FindetStatt = "Findet nicht statt"
+								Abgesagt = "Widerruf der Absage", AbgesagtShort = "t"
+
+							}else{
+								var FindetStatt = "Findet statt"
+								Abgesagt = "Absagen", AbgesagtShort = "f"
+							}
+							if(rows[i].ZeitUnix <= Date.now()){
+								var Vergangenheitswarnung = "--- Event in Vergangenheit ---"
+							}else{
+								var Vergangenheitswarnung = "--- Kommendes Event ---"
+							}
+							let EventName = rows[i].EventName
+							let EventArt = rows[i].EventArt
+							let Zeit = rows[i].Zeit
+							let Adresse = rows[i].Adresse
+							let URI = rows[i].URI
+							let Beschreibung = rows[i].Beschreibung
+
+							let Auto = `Auto`
+							let Camping = `Camping`
+							let Bier =  `Bier`
+							if(rows[i].Icon === Icons[0]){
+								Auto = `• Auto •`
+							}else if(rows[i].Icon === Icons[1]){
+								Camping = `• Camping •`
+							}else{
+								Bier = `• Bier •`
+							}
+							var replyMarkup = bot.inlineKeyboard([
+								[
+								  bot.inlineButton(Auto, { callback: `u_0_${rows[i].AccesKey}_${Icons.indexOf(rows[i].Icon)}` }),
+								  bot.inlineButton(Camping, { callback: `u_1_${rows[i].AccesKey}_${Icons.indexOf(rows[i].Icon)}` }),
+								  bot.inlineButton(Bier, { callback: `u_2_${rows[i].AccesKey}_${Icons.indexOf(rows[i].Icon)}` })
+								],
+								[
+								  bot.inlineButton(Abgesagt, { callback: `u_s_${rows[i].AccesKey}_${AbgesagtShort}` })
+								]
+							]);
+
+							let Nachricht = `${Vergangenheitswarnung}\n${FindetStatt}\n\n<b>Event Name:</b> <i>${EventName}</i>\n<b>Event Art:</b> <i>${EventArt}</i>\n<b>Startzeit:</b> <i>${Zeit}</i>\n<b>Ort:</b> <i>${Adresse}</i>\n<b>Webseite:</b> <i>${URI}</i>\n\n<pre language="c++">${Beschreibung}</pre>`;
+								answers.addArticle({
+									id: idCount,
+									title: EventName,
+									description: `${EventArt} | ${FindetStatt}`,
+									message_text: Nachricht,
+									reply_markup: replyMarkup,
+									parse_mode: 'html'
+								});
+								idCount++
+						}
+						return bot.answerQuery(answers).catch(error => console.log(error))
+					}
+				});
+				connection.release();
+			});
+		}
+	}else{
+		answers.addArticle({
+			id: 'Not Admin',
+			title: 'Du bist Admin sein!',
+			description: query,
+			message_text: ("Diese Fuhktion steht nur Admins zur verfügung, leider stehst du nicht auf der Liste.")
+		});
+		return bot.answerQuery(answers);
 	}
 });
 
@@ -366,4 +615,16 @@ function removeItemFromArrayByName(arr) {
         }
     }
     return arr;
+}
+
+function cleanString(input) {
+	var output = "";
+    for (var i=0; i<input.length; i++) {
+        if(input.charCodeAt(i) <= 127 || input.charCodeAt(i) === 223 || input.charCodeAt(i) === 252 || input.charCodeAt(i) === 228 || input.charCodeAt(i) === 246 || input.charCodeAt(i) === 196 || input.charCodeAt(i) === 214 || input.charCodeAt(i) === 220) {
+			if(input.charCodeAt(i) != 39){
+				output += input.charAt(i);
+			}
+        }
+    }
+    return output;
 }
