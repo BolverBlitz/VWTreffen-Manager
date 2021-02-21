@@ -112,7 +112,7 @@ input, select, textarea {
 	}
 
 	body {
-		background: #312450;
+		background: #FFDCB9;
 	}
 
 		body.is-preload *, body.is-preload *:before, body.is-preload *:after {
@@ -129,7 +129,7 @@ input, select, textarea {
 /* Type */
 
 	body, input, select, textarea {
-		color: rgba(255, 255, 255, 0.55);
+		color: rgba(0, 0, 0, 0.55);
 		font-family: Arial, Helvetica, sans-serif;
 		font-size: 16.5pt;
 		font-weight: normal;
@@ -172,11 +172,11 @@ input, select, textarea {
 
 		a:hover {
 			border-bottom-color: transparent;
-			color: #ffffff;
+			color: #000000;
 		}
 
 	strong, b {
-		color: #ffffff;
+		color: #000000;
 		font-weight: bold;
 	}
 
@@ -189,7 +189,7 @@ input, select, textarea {
 	}
 
 	h1, h2, h3, h4, h5, h6 {
-		color: #ffffff;
+		color: #000000;
 		font-weight: bold;
 		line-height: 1.5;
 		margin: 0 0 0.5em 0;
@@ -1847,9 +1847,9 @@ input, select, textarea {
 		transition: border-color 0.2s ease;
 		background-color: transparent;
 		border: solid 1px !important;
-		border-color: rgba(255, 255, 255, 0.15) !important;
+		border-color: #A38D76 !important;
 		border-radius: 3em;
-		color: #ffffff !important;
+		color: #000000 !important;
 		cursor: pointer;
 		display: inline-block;
 		font-size: 0.6em;
@@ -1880,7 +1880,7 @@ input, select, textarea {
 			-webkit-transition: opacity 0.2s ease, -webkit-transform 0.2s ease;
 			-ms-transition: opacity 0.2s ease, -ms-transform 0.2s ease;
 			transition: opacity 0.2s ease, transform 0.2s ease;
-			background: #ffffff;
+			background: #000000;
 			border-radius: 3em;
 			content: '';
 			height: 100%;
@@ -1928,8 +1928,8 @@ input, select, textarea {
 		input[type="button"].primary,
 		button.primary,
 		.button.primary {
-			background-color: #ffffff;
-			color: #312450 !important;
+			background-color: #000000;
+			color: #fdc892 !important;
 		}
 
 			input[type="submit"].primary:after,
@@ -1959,7 +1959,7 @@ input, select, textarea {
 		input[type="button"]:hover,
 		button:hover,
 		.button:hover {
-			border-color: rgba(255, 255, 255, 0.55) !important;
+			border-color: rgba(0, 255, 255, 0.55) !important;
 		}
 
 			input[type="submit"]:hover:after,
@@ -1979,7 +1979,7 @@ input, select, textarea {
 			input[type="button"]:hover:active,
 			button:hover:active,
 			.button:hover:active {
-				border-color: #ffffff !important;
+				border-color: #000000 !important;
 			}
 
 				input[type="submit"]:hover:active:after,
@@ -2309,7 +2309,7 @@ input, select, textarea {
 		}
 
 	label {
-		color: #ffffff;
+		color: #000000;
 		font-weight: bold;
 		line-height: 1.5;
 		margin: 0 0 0.7em 0;
@@ -2327,10 +2327,10 @@ input, select, textarea {
 		-webkit-appearance: none;
 		-ms-appearance: none;
 		appearance: none;
-		background: rgba(255, 255, 255, 0.05);
+		background: rgba(255, 255, 255, 0.45);
 		border-radius: 0.25em;
 		border: none;
-		border: solid 1px rgba(255, 255, 255, 0.15);
+		border: solid 1px rgba(255, 255, 255, 0.35);
 		color: inherit;
 		display: block;
 		outline: 0;
@@ -2354,8 +2354,8 @@ input, select, textarea {
 		input[type="tel"]:focus,
 		select:focus,
 		textarea:focus {
-			border-color: #ffffff;
-			box-shadow: 0 0 0 1px #ffffff;
+			border-color: #000000;
+			box-shadow: 0 0 0 1px #000000;
 		}
 
 	select {
@@ -2369,8 +2369,8 @@ input, select, textarea {
 	}
 
 		select option {
-			color: #ffffff;
-			background: #312450;
+			color: #000000;
+			background: #FFDCB9;
 		}
 
 		select:focus::-ms-value {
@@ -2413,7 +2413,7 @@ input, select, textarea {
 		input[type="checkbox"] + label,
 		input[type="radio"] + label {
 			text-decoration: none;
-			color: rgba(255, 255, 255, 0.55);
+			color: rgba(0, 0, 0, 0.55);
 			cursor: pointer;
 			display: inline-block;
 			font-size: 1em;
@@ -2456,16 +2456,16 @@ input, select, textarea {
 
 		input[type="checkbox"]:checked + label:before,
 		input[type="radio"]:checked + label:before {
-			background: #ffffff;
-			border-color: #ffffff;
+			background: #000000;
+			border-color: #000000;
 			color: #009927;
 			content: '\f00c';
 		}
 
 		input[type="checkbox"]:focus + label:before,
 		input[type="radio"]:focus + label:before {
-			border-color: #ffffff;
-			box-shadow: 0 0 0 1px #ffffff;
+			border-color: #000000;
+			box-shadow: 0 0 0 1px #000000;
 		}
 
 	input[type="checkbox"] + label:before {
@@ -2537,9 +2537,9 @@ input, select, textarea {
 			width: 2.5em;
 			height: 2.5em;
 			display: block;
-			background: #ffffff;
+			background: #000000;
 			border-radius: 100%;
-			color: #312450;
+			color: #ffffff;
 			text-align: center;
 			line-height: 2.5em;
 			margin: 0 0 1.3em 0;
@@ -2550,23 +2550,23 @@ input, select, textarea {
 			}
 
 				.wrapper.style1 .icon.major:before {
-					color: #5760df;
+					color: #FFDCB9;
 				}
 
 				.wrapper.style1-alt .icon.major:before {
-					color: #493382;
+					color: #FFDCB9;
 				}
 
 				.wrapper.style2 .icon.major:before {
-					color: #5052b5;
+					color: #FFDCB9;
 				}
 
 				.wrapper.style2-alt .icon.major:before {
-					color: #3e4094;
+					color: #FFDCB9;
 				}
 
 				.wrapper.style3 .icon.major:before {
-					color: #009927;
+					color: #CCB094;
 				}
 
 				.wrapper.style3-alt .icon.major:before {
@@ -3172,7 +3172,7 @@ input, select, textarea {
 		}
 
 		table th {
-			color: #ffffff;
+			color: #000000;
 			font-size: 1em;
 			font-weight: bold;
 			padding: 0 0.75em 0.75em 0.75em;
@@ -3250,27 +3250,27 @@ input, select, textarea {
 			}
 
 		.wrapper.alt {
-			background-color: #261c3e;
+			background-color: #FFDCB9;
 		}
 
 		.wrapper.style1 {
-			background-color: #5760df;
+			background-color: #FFDCB9;
 		}
 
 		.wrapper.style1-alt {
-			background-color: #493382;
+			background-color: #A38D76;
 		}
 
 		.wrapper.style2 {
-			background-color: #5052b5;
+			background-color: #FFDCB9;
 		}
 
 		.wrapper.style2-alt {
-			background-color: #3e4094;
+			background-color: #FFDCB9;
 		}
 
 		.wrapper.style3 {
-			background-color: #009927;
+			background-color: #ffce9d;
 		}
 
 		.wrapper.style3-alt {
@@ -3384,14 +3384,14 @@ input, select, textarea {
 		display: -webkit-flex;
 		display: -ms-flex;
 		display: flex;
-		background-color: #5760df;
+		background-color: #CCB094;
 		cursor: default;
 		padding: 1.75em 2em;
 	}
 
 		#header > .title {
 			border: 0;
-			color: #ffffff;
+			color: #000000;
 			display: block;
 			font-size: 1.25em;
 			font-weight: bold;
@@ -3432,11 +3432,11 @@ input, select, textarea {
 					}
 
 						#header > nav > ul > li a:hover {
-							color: rgba(255, 255, 255, 0.55);
+							color: rgba(0, 0, 0, 0.55);
 						}
 
 						#header > nav > ul > li a.active {
-							color: #ffffff;
+							color: #000000;
 						}
 
 		@media screen and (max-width: 736px) {
@@ -3538,7 +3538,7 @@ input, select, textarea {
 
 	#sidebar {
 		padding: 2.5em 2.5em 0.5em 2.5em ;
-		background: #312450;
+		background: #CCB094;
 		cursor: default;
 		height: 100vh;
 		left: 0;
@@ -3751,7 +3751,7 @@ input, select, textarea {
 			-ms-transition: color 0.2s ease;
 			transition: color 0.2s ease;
 			border: 0;
-			color: rgba(255, 255, 255, 0.35);
+			color: rgba(0, 0, 0, 0.45);
 			display: block;
 			font-size: 0.6em;
 			font-weight: bold;
@@ -3775,14 +3775,14 @@ input, select, textarea {
 			}
 
 			#sidebar nav a:before {
-				background: #3c2c62;
+				background: #82715E;
 			}
 
 			#sidebar nav a:after {
-				background-image: -moz-linear-gradient(to right, #5760df, #009927);
-				background-image: -webkit-linear-gradient(to right, #5760df, #009927);
-				background-image: -ms-linear-gradient(to right, #5760df, #009927);
-				background-image: linear-gradient(to right, #5760df, #009927);
+				background-image: -moz-linear-gradient(to right, #FFDCB9, #CCB094);
+				background-image: -webkit-linear-gradient(to right, #FFDCB9, #CCB094);
+				background-image: -ms-linear-gradient(to right, #FFDCB9, #CCB094);
+				background-image: linear-gradient(to right, #FFDCB9, #CCB094);
 				-moz-transition: max-width 0.2s ease;
 				-webkit-transition: max-width 0.2s ease;
 				-ms-transition: max-width 0.2s ease;
@@ -3791,11 +3791,11 @@ input, select, textarea {
 			}
 
 			#sidebar nav a:hover {
-				color: rgba(255, 255, 255, 0.55);
+				color: rgba(0, 0, 0, 0.55);
 			}
 
 			#sidebar nav a.active {
-				color: #ffffff;
+				color: #000000;
 			}
 
 				#sidebar nav a.active:after {
