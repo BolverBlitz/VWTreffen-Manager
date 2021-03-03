@@ -552,7 +552,7 @@ bot.on('inlineQuery', msg => {
 								answers.addArticle({
 									id: idCount,
 									title: EventName,
-									description: `${EventArt} | ${FindetStatt}`,
+									description: `${EventArt} | ${FindetStatt} | ${Zeit}`,
 									message_text: Nachricht,
 									reply_markup: replyMarkup,
 									parse_mode: 'html'
