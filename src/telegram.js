@@ -590,18 +590,18 @@ function CreateHTML(){
 		}else{
 			var Sections = "";
 			var Count = body.rows.length;
-			body.rows.map(Event => {
+			body.rows.map((Event, index) => {
 				let DatumZeit = Event.Zeit.split(" ");
 				if(Event.URI !== ""){
 					var URLHTML = `<a href="${Event.URI}">Eventseite</a>`
 				}else{
 					var URLHTML = ``
 				}
-				Sections = Sections + `<section> <span class="icon solid major fas ${Event.Icon}"></span> <h3>${Event.EventName}</h3><p>Was: <i>${Event.EventArt}</i><br>Wann: <i>${DatumZeit[0]}</i> um <i>${DatumZeit[1]}</i> Uhr<br>Wo: <i>${Event.Adresse}</i></br>${Event.Beschreibung}<br><b>${URLHTML}</b></p> </section>`
+				Sections = Sections + `<section> <span class="icon solid major fas ${Event.Icon}"></span> <h3>${Event.EventName}</h3><p>Was: <i>${Event.EventArt}</i><br>Wann: <i>${DatumZeit[0]}</i> um <i>${DatumZeit[1]}</i> Uhr<br>Wo: <i>${Event.Adresse}</i></br>${addDotDotDotafternumberofwords(Event.Beschreibung, index, 28)}<br><b>${URLHTML}</b></p> </section>`
 			});
 		}
-		var FertigHTML = Vorlage.replace('REPLACE_THIS_WITH_SECTIONEVENTS_INFO', Sections)
-		FertigHTML = FertigHTML.replace('REPLACE_THIS_WITH_SECTIONEVENTS_COUNT', Count)
+		var FertigHTML = Vorlage.split('REPLACE_THIS_WITH_SECTIONEVENTS_INFO').join(Sections)
+		FertigHTML = FertigHTML.split('REPLACE_THIS_WITH_SECTIONEVENTS_COUNT').join(Count)
 		fs.writeFile("./src/Web/index.html", FertigHTML, (err) => {if (err) console.log(err);
 		});
 	});
@@ -627,4 +627,20 @@ function cleanString(input) {
         }
     }
     return output;
+}
+
+function addDotDotDotafternumberofwords(input, ind, words) {
+	index = input.split(" ");
+	let flag = false
+	for (var i=0; i<index.length; i++) {
+		if(i === words){
+			flag = true
+			index.splice(i, 0, `<span id='dots${ind}'><b>...</b></span><span id='more${ind}'>`);
+		}
+	}
+	if(flag){
+		index.push(`</span>`);
+		index.push(`<br><button2 onclick='showMoreFunc(${ind})' id='moreBut${ind}'><i>Zeig mehr</i></button2>`)
+	}
+	return index.join(" ").replace(/\s{2,}/g, " ");
 }

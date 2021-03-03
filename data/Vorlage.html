@@ -237,3 +237,30 @@
 
 	</body>
 </html>
+
+<script>
+	$(document).ready(function(){
+		for (var i=0; i<REPLACE_THIS_WITH_SECTIONEVENTS_COUNT; i++) {
+			let moreText = document.getElementById(`more${i}`);
+			if(moreText != null){
+				moreText.style.display = "none"
+			}
+		}
+	});
+
+	function showMoreFunc(index) {
+	  let dots = document.getElementById(`dots${index}`);
+	  let moreText = document.getElementById(`more${index}`);
+	  let btnText = document.getElementById(`moreBut${index}`);
+	
+	  if (dots.style.display === "none") {
+		dots.style.display = "inline";
+		btnText.innerHTML = "<i>Zeig mehr</i>"; 
+		moreText.style.display = "none";
+	  } else {
+		dots.style.display = "none";
+		btnText.innerHTML = "<i>Zeig weniger</i>"; 
+		moreText.style.display = "inline";
+	  }
+	}
+</script>
