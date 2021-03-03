@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const Joi = require('joi');
+const SanitizeHtml = require('sanitize-html');
 const mysql = require('mysql');
 const SqlString = require('sqlstring');
 const randomstring = require('randomstring');
@@ -46,20 +47,40 @@ const GETlimiter = rateLimit({
 
 const router = express.Router();
 
-const schemaPost = Joi.object({
-  Eventname: Joi.string().max(256).required().regex(/^[a-z\d\s\-\.\,\ä\ü\ö\ß\&\(\)\"\!\?\+\*\/\<\>\|]*$/i),
-  Eventart: Joi.number().max(3).required(),
-  Date: Joi.string().trim().required().regex(/^(?:(?:31(\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/),
-  Time: Joi.string().trim().required().regex(/([01]?[0-9]|2[0-3]):[0-5][0-9]/),
-  Adresse: Joi.string().trim().max(256).required().regex(/^[a-z\d\s\-\.\,\ä\ü\ö\ß\&\(\)\"\!\?\+\*\/\<\>\|]*$/i),
-  URL: Joi.string().max(256).uri().allow(''),
-  Beschreibung: Joi.string().trim().max(1024).required().regex(/^[a-z\d\s\-\.\,\ä\ü\ö\ß\&\(\)\"\!\?\+\*\/\<\>\|]*$/i),
+const customJoi = Joi.extend((joi) => {
+  return {
+      type: 'string',
+      base: joi.string(),
+      rules: {
+          htmlStrip: {
+
+              validate(value) {
+
+                  return SanitizeHtml(value, {
+                      allowedTags: [],
+                      allowedAttributes: {},
+                  });
+              },
+          },
+      },
+  };
 });
 
-const schemaGet = Joi.object({
-  limit: Joi.number().max(50),
-  timestamp: Joi.number(),
-  eventname: Joi.string().max(256).allow('')
+
+const schemaPost = customJoi.object({
+  Eventname: customJoi.string().max(256).htmlStrip().required().regex(/^[a-z\d\s\-\.\,\ä\ü\ö\ß\&\(\)\"\!\?\+\*\/\<\>\|]*$/i),
+  Eventart: customJoi.number().max(3).required(),
+  Date: customJoi.string().trim().required().regex(/^(?:(?:31(\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/),
+  Time: customJoi.string().trim().required().regex(/([01]?[0-9]|2[0-3]):[0-5][0-9]/),
+  Adresse: customJoi.string().trim().max(256).htmlStrip().required().regex(/^[a-z\d\s\-\.\,\ä\ü\ö\ß\&\(\)\"\!\?\+\*\/\<\>\|]*$/i),
+  URL: customJoi.string().max(256).htmlStrip().uri().allow(''),
+  Beschreibung: customJoi.string().trim().max(1024).htmlStrip().required().regex(/^[a-z\d\s\-\.\,\ä\ü\ö\ß\&\(\)\"\!\?\+\*\/\<\>\|]*$/i),
+});
+
+const schemaGet = customJoi.object({
+  limit: customJoi.number().max(50),
+  timestamp: customJoi.number(),
+  eventname: customJoi.string().max(256).htmlStrip().allow('')
 });
 
 router.post('/', POSTlimiter, async (reg, res, next) => {
