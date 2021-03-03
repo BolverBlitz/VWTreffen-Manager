@@ -32,7 +32,7 @@ const PluginConfig = {
 /* Plugin info */
 const PluginName = 'EBG-VWTreffen';
 const PluginRequirements = [];
-const PluginVersion = '0.0.2';
+const PluginVersion = '0.0.3';
 const PluginAuthor = 'BolverBlitz';
 const PluginDocs = '';
 

@@ -1,6 +1,6 @@
 {
   "name": "VW-Manager",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "VW-Manager",
   "main": "index.js",
   "scripts": {
