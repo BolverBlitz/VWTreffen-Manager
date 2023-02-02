@@ -178,8 +178,12 @@
 															}
 														}
 														if(err.responseJSON.message.includes("fails to match the required pattern:")){
-															if(RespArr[1].replace(/"/g,'',) === "DateTime"){
+															if(RespArr[1].replace(/"/g,'',) === "Time"){
 																$('#result').text("Datum und Uhrzeit entspricht nicht der Formatierung! *");
+																$('#DateTime').addClass("highlight");
+																setTimeout(function () {
+																	$('#DateTime').removeClass('highlight');
+																}, 2000);
 															}else{
 																$('#result').text(jsUcfirst(RespArr[1].replace(/"/g,'',)) + " enthält unzulässige Zeichen! ****");
 															}
