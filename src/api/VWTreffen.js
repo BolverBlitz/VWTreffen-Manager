@@ -179,6 +179,7 @@ router.get('/', GETlimiter, async (reg, res, next) => {
     }
 
     db.getConnection((err, connection) => {
+      if (err) console.log(err);
       connection.query(GetSQL, (err, rows, fields) => {
         if (!err) {
           if (Object.entries(rows).length === 0) {
